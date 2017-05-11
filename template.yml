@@ -1,0 +1,109 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: kinesis-template
+  annotations:
+    description: "An implementation of Amazon's Kinesis, focused on correctness and performance, and built on LevelDB."
+    iconClass: "glyphicon-equalizer"
+    tags: "messaging,kinesis,kinesalite"
+    displayName: Kinesalite
+objects:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: ${DEPLOYMENT_NAME}
+    name: ${DEPLOYMENT_NAME}
+  spec:
+    ports:
+    - name: 4567-tcp
+      port: 4567
+      protocol: TCP
+      targetPort: 4567
+    selector:
+      deploymentconfig: ${DEPLOYMENT_NAME}
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    generation: 1
+    labels:
+      app: ${DEPLOYMENT_NAME}
+    name: ${DEPLOYMENT_NAME}
+  spec:
+    replicas: 1
+    selector:
+      app: ${DEPLOYMENT_NAME}
+      deploymentconfig: ${DEPLOYMENT_NAME}
+    strategy:
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        labels:
+          app: ${DEPLOYMENT_NAME}
+          deploymentconfig: ${DEPLOYMENT_NAME}
+      spec:
+        containers:
+        - env: {}
+          image: " "
+          imagePullPolicy: IfNotPresent
+          name: ${DEPLOYMENT_NAME}
+          ports:
+          - containerPort: 4567
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          volumeMounts:
+          - mountPath: /kinesalite/data
+            name: kinesalite-1
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - emptyDir: {}
+          name: kinesalite-1
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - ${DEPLOYMENT_NAME}
+        from:
+          kind: ImageStreamTag
+          name: ${DEPLOYMENT_NAME}:latest
+      type: ImageChange
+  status: {}
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    creationTimestamp:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    labels:
+      app: ${DEPLOYMENT_NAME}
+    name: ${DEPLOYMENT_NAME}
+  spec:
+    dockerImageRepository: ''
+    tags:
+    - from:
+        kind: DockerImage
+        name: ${IMAGE_NAME}
+      name: latest
+      importPolicy:
+        scheduled: true
+parameters:
+- displayName: Name
+  required: true
+  name: DEPLOYMENT_NAME
+  value: "kinesis"
+- displayName: Image
+  required: true
+  name: IMAGE_NAME

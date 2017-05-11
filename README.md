@@ -1,10 +1,22 @@
-OpenShift Kinesis
+Kinesis on OpenShift
 ===
 
-Using Kinesalite https://github.com/mhart/kinesalite
+[![build status](https://gitorious.ctc.com/gitlab/openshift/kinesalite/badges/master/build.svg)](https://gitorious.ctc.com/gitlab/openshift/kinesalite/commits/master)
 
+Using [Kinesalite](https://github.com/mhart/kinesalite) which is an implementation of Amazon's Kinesis, focussed on correctness and performance, and built on LevelDB.
+
+### Resources
+
+- OpenShift Template: [template.yml](template.yml)
 
 ### Environment variables
+
+- `SSL_ENABLED`: Enable SSL on the connection (default: false)
+- `CREATE_STREAM_MS`: Amount of time in ms streams stay in CREATING state (default: 500)
+- `DELETE_STREAM_MS`: Amount of time in ms streams stay in DELETING state (default: 500)
+- `UPDATE_STREAM_MS`: Amount of time in ms streams stay in UPDATING state (default: 500)
+
+### Usage
 
 ```
 Usage: kinesalite [--port <port>] [--path <path>] [--ssl] [options]
