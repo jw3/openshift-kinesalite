@@ -8,7 +8,7 @@ LABEL io.k8s.display-name="Kinesalite" \
       io.openshift.tags="messaging,kafka,kinesis" \
       io.openshift.min-memory="512Mi"
 
-RUN npm install -g kinesalite
+RUN ["/bin/bash", "-l", "-c", "npm install -g kinesalite"]
 
 VOLUME [$DATADIR]
 
