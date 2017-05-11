@@ -10,10 +10,11 @@ LABEL io.k8s.display-name="Kinesalite" \
 
 RUN ["/bin/bash", "-l", "-c", "npm install -g kinesalite"]
 
-VOLUME [$DATADIR]
-
-RUN chgrp -R 0 $DATADIR \
+RUN mkdir -p $DATADIR \
+ && chgrp -R 0 $DATADIR \
  && chmod -R g+rwX $DATADIR
+
+VOLUME [$DATADIR]
 
 EXPOSE 4567
 
